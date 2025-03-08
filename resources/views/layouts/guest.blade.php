@@ -36,11 +36,11 @@
         </style>
         
     </head>
-    <body class="font-sans text-gray-900 antialiased">
+    <body class="font-sans text-white">
         <div class="min-h-screen flex flex-col sm:flex-row">
             <!-- Left Column (Form) -->
             <div class="flex-1 flex flex-col md:justify-center items-center px-6 py-4">
-                <h1 class="text-white text-center text-4xl sm:text-5xl md:text-7xl mb-6 md:mb-20">Happy 2nd Anniversary Bebu ko!</h1>
+                <h1 class="text-center text-4xl sm:text-5xl md:text-7xl mb-6 md:mb-20">Happy 2nd Anniversary Bebu ko!</h1>
                 <div class="w-full sm:max-w-md px-6 py-4 bg-white dark:bg-yellow-800 shadow-md overflow-hidden sm:rounded-lg">
                     {{ $slot }}
                 </div>
