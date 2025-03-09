@@ -9,48 +9,50 @@ class SavingController extends Controller
 {
     public function index()
     {
-        $savings = Saving::all(); // Get all savings (for a single user setup)
-        return view('savings.index', compact('savings'));
-    }
-
-    public function create()
-    {
-        return view('savings.create');
+        $Saving = Saving::all();
+        return response()->json($Saving);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'goal_amount' => 'required|numeric|min:0',
+            'user_id' => 'required|exists:users,id',
+            'title' => 'required|string',
+            'goal_amount' => 'required|numeric',
+            'current_amount' => 'required|numeric',
             'target_date' => 'nullable|date',
         ]);
 
-        Saving::create($request->all());
-        return redirect()->route('savings.index')->with('success', 'Savings goal added!');
+        $saving = Saving::create($request->all());
+        return response()->json($saving, 201);
     }
 
-    public function edit(Saving $saving)
+    public function show($id)
     {
-        return view('savings.edit', compact('saving'));
+        $saving = Saving::findOrFail($id);
+        return response()->json($saving);
     }
 
-    public function update(Request $request, Saving $saving)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'goal_amount' => 'required|numeric|min:0',
-            'current_amount' => 'required|numeric|min:0',
+            'title' => 'nullable|string',
+            'goal_amount' => 'nullable|numeric',
+            'current_amount' => 'nullable|numeric',
             'target_date' => 'nullable|date',
         ]);
 
+        $saving = Saving::findOrFail($id);
         $saving->update($request->all());
-        return redirect()->route('savings.index')->with('success', 'Savings updated!');
+
+        return response()->json($saving);
     }
 
-    public function destroy(Saving $saving)
+    public function destroy($id)
     {
+        $saving = Saving::findOrFail($id);
         $saving->delete();
-        return redirect()->route('savings.index')->with('success', 'Savings removed.');
+
+        return response()->json(null, 204);
     }
 }

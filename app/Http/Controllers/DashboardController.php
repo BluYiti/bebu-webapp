@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Expense;
 use App\Models\Income;
+use App\Models\Expense;
 use App\Models\Budget;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $userId = auth()->id(); // Get the logged-in user's ID
 
-        $totalIncome = Income::where('user_id', $user->id)->sum('amount');
-        $totalExpenses = Expense::where('user_id', $user->id)->sum('amount');
-        $budgetLimit = Budget::where('user_id', $user->id)->value('monthly_limit');
+        // Get total income for the user
+        $totalIncome = Income::where('user_id', $userId)->sum('amount');
+        
+        // Get total expenses for the user
+        $totalExpenses = Expense::where('user_id', $userId)->sum('amount');
+        
+        // Get the user's active budget
+        $activeBudget = Budget::where('user_id', $userId)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
 
-        $budgetRemaining = $budgetLimit - $totalExpenses;
+        $budgetRemaining = $activeBudget ? $activeBudget->amount - $totalExpenses : 0;
 
         return view('dashboard', compact('totalIncome', 'totalExpenses', 'budgetRemaining'));
     }

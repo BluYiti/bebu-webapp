@@ -2,39 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Expense;
+use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::where('user_id', auth()->id())->latest()->get();
-        return view('expenses.index', compact('expenses'));
-    }
-
-    public function create()
-    {
-        return view('expenses.create');
+        $expenses = Expense::all();
+        return response()->json($expenses);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'user_id' => 'required|exists:users,id',
+            'budget_id' => 'required|exists:budgets,id',
             'category' => 'required|string',
+            'amount' => 'required|numeric',
             'date' => 'required|date',
-            'notes' => 'nullable|string',
         ]);
 
-        Expense::create([
-            'user_id' => auth()->id(),
-            'amount' => $request->amount,
-            'category' => $request->category,
-            'date' => $request->date,
-            'notes' => $request->notes,
+        $expense = Expense::create($request->all());
+        return response()->json($expense, 201);
+    }
+
+    public function show($id)
+    {
+        $expense = Expense::findOrFail($id);
+        return response()->json($expense);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'category' => 'nullable|string',
+            'amount' => 'nullable|numeric',
+            'date' => 'nullable|date',
         ]);
 
-        return redirect()->route('expenses.index')->with('success', 'Expense added!');
+        $expense = Expense::findOrFail($id);
+        $expense->update($request->all());
+
+        return response()->json($expense);
+    }
+
+    public function destroy($id)
+    {
+        $expense = Expense::findOrFail($id);
+        $expense->delete();
+
+        return response()->json(null, 204);
     }
 }
