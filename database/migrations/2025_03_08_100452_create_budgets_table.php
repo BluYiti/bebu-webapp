@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('budgets', function (Blueprint $table) {
+            $table->engine = 'InnoDB'; // Ensure using InnoDB
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('monthly_limit', 10, 2);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Foreign key for user
+            $table->string('category'); // Category of the budget (e.g., groceries, rent)
+            $table->decimal('amount', 10, 2); // Budgeted amount
+            $table->date('start_date'); // Start date of the budget period
+            $table->date('end_date'); // End date of the budget period
             $table->timestamps();
         });
     }

@@ -12,12 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('expenses', function (Blueprint $table) {
+            $table->engine = 'InnoDB'; // Ensure using InnoDB
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
+            $table->unsignedBigInteger('budget_id');
+            $table->foreign('budget_id')->references('id')->on('budgets')->onDelete('cascade');
             $table->string('category');
+            $table->decimal('amount', 10, 2);
             $table->date('date');
-            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
