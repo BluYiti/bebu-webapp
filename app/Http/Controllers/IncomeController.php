@@ -10,7 +10,7 @@ class IncomeController extends Controller
     public function index()
     {
         $incomes = Income::all();
-        return response()->json($incomes);
+        return view('income.index', compact('incomes'));
     }
 
     public function store(Request $request)

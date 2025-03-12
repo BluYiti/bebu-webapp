@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Budget extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'monthly_limit'];
+    protected $fillable = [
+        'user_id', 'category', 'amount', 'start_date', 'end_date'
+    ];
 
     public function user()
     {

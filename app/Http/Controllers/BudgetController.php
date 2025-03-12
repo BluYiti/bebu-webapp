@@ -4,27 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Budget;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BudgetController extends Controller
 {
     public function index()
     {
-        $budgets = Budget::all();
-        return response()->json($budgets);
-    }
+        $budgets = Budget::all(); // Fetch all budget records
+        return view('budget.index', compact('budgets')); // Pass the collection to the view
+    }    
 
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'category' => 'required|string',
+            'category' => 'required|string|max:255',
             'amount' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-
-        $budget = Budget::create($request->all());
-        return response()->json($budget, 201);
+    
+        Budget::create([
+            'user_id' => Auth::id(), // Get the currently logged-in user's ID
+            'category' => $request->category,
+            'amount' => $request->amount,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ]);
+    
+        return redirect()->route('budget.index')->with('success', 'Budget created successfully!');
     }
 
     public function show($id)
@@ -32,6 +39,12 @@ class BudgetController extends Controller
         $budget = Budget::findOrFail($id);
         return response()->json($budget);
     }
+
+    public function create()
+    {
+        return view('budget.create'); // Ensure you have a create.blade.php file
+    }
+
 
     public function update(Request $request, $id)
     {

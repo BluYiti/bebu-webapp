@@ -9,8 +9,8 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::all();
-        return response()->json($expenses);
+        $expenses = Expense::all(); // Fetch all expenses
+        return view('expenses.index', compact('expenses'));
     }
 
     public function store(Request $request)
