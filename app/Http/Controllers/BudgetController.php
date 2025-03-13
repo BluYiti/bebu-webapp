@@ -10,8 +10,8 @@ class BudgetController extends Controller
 {
     public function index()
     {
-        $budgets = Budget::all(); // Fetch all budget records
-        return view('budget.index', compact('budgets')); // Pass the collection to the view
+        $budgets = Budget::all(); // Fetch all budgets
+        return view('budget.index', compact('budgets'));
     }    
 
     public function store(Request $request)
