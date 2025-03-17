@@ -13,23 +13,42 @@ class IncomeController extends Controller
         return view('income.index', compact('incomes'));
     }
 
+    public function create()
+    {
+        return view('income.create');
+    }
+
     public function store(Request $request)
     {
+        // Assuming the user is logged in and you want to save the income under the logged-in user
         $request->validate([
-            'user_id' => 'required|exists:users,id',
             'source' => 'required|string',
             'amount' => 'required|numeric',
             'date' => 'required|date',
         ]);
-
-        $income = Income::create($request->all());
-        return response()->json($income, 201);
-    }
+    
+        // Create the income with the logged-in user's ID
+        $income = Income::create([
+            'user_id' => auth()->id(),  // Set the user_id to the currently authenticated user's ID
+            'source' => $request->source,
+            'amount' => $request->amount,
+            'date' => $request->date,
+        ]);
+        
+     // Redirect to a success page or wherever you need
+     return redirect()->route('incomes.index');
+    }    
 
     public function show($id)
     {
         $income = Income::findOrFail($id);
         return response()->json($income);
+    }
+
+    public function edit($id)
+    {
+        $income = Income::findOrFail($id);
+        return view('income.edit', compact('income'));
     }
 
     public function update(Request $request, $id)
@@ -43,14 +62,15 @@ class IncomeController extends Controller
         $income = Income::findOrFail($id);
         $income->update($request->all());
 
-        return response()->json($income);
+        // Redirect to a success page or wherever you need
+        return redirect()->route('incomes.index');
     }
 
     public function destroy($id)
     {
         $income = Income::findOrFail($id);
         $income->delete();
-
-        return response()->json(null, 204);
-    }
+    
+        return response()->json(['success' => true]);
+    }    
 }
