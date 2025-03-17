@@ -46,6 +46,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/savings/{saving}/edit', [SavingController::class, 'edit'])->name('savings.edit');
     Route::put('/savings/{saving}', [SavingController::class, 'update'])->name('savings.update');
     Route::delete('/savings/{saving}', [SavingController::class, 'destroy'])->name('savings.destroy');
+    Route::get('/savings/{id}/deposit', [SavingController::class, 'showDepositForm'])->name('savings.deposit.form');
+    Route::post('/savings/{id}/deposit', [SavingController::class, 'storeDeposit'])->name('savings.deposit.store');
+    Route::post('/savings/{id}/withdraw', [SavingController::class, 'storeWithdraw'])->name('savings.withdraw.store');
+    Route::get('/savings/{id}/complete', action: [SavingController::class, 'complete'])->name('savings.complete');
 
     // Incomes Routes
     Route::get('/incomes', [IncomeController::class, 'index'])->name('incomes.index');

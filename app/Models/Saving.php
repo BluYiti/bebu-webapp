@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Saving extends Model
 {
-    protected $fillable = ['user_id', 'title', 'goal_amount', 'current_amount', 'target_date'];
+    protected $fillable = ['user_id', 'title', 'goal_amount', 'current_amount', 'target_date', 'status'];
 
     public function user()
     {
