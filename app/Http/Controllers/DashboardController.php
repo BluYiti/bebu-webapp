@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $totalIncome = Income::where('user_id', $userId)->sum('amount');
         
         // Get total expenses for the user
-        $totalExpenses = Expense::where('user_id', $userId)->sum('amount');
+        $totalExpenses = Expense::where('user_id', $userId)->sum('total_amount');
         
         // Get the user's active budget
         $activeBudget = Budget::where('user_id', $userId)
