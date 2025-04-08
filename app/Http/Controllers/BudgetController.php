@@ -65,7 +65,7 @@ class BudgetController extends Controller
     {
         $budget = Budget::findOrFail($id);
         $budget->delete();
-
-        return response()->json(null, 204);
-    }
+        
+        return response()->json(['message' => 'Budget deleted successfully'], 204); // Return a successful JSON response
+    }    
 }

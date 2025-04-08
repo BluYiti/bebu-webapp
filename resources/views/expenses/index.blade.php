@@ -15,31 +15,29 @@
                 </a>
 
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
-                    <table class="table-auto w-full border-collapse border border-gray-300">
+                    <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-600">
                         <thead>
-                            <tr class="bg-gray-100 dark:bg-gray-700">
+                            <tr class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 <th class="border p-2">Date</th>
                                 <th class="border p-2">Category</th>
                                 <th class="border p-2">Amount</th>
-                                <th class="border p-2">Quantity</th> <!-- Added Quantity column -->
-                                <th class="border p-2">Total Amount</th> <!-- Added Total Amount column -->
+                                <th class="border p-2">Quantity</th>
+                                <th class="border p-2">Total Amount</th>
                                 <th class="border p-2">Notes</th>
-                                <th class="border p-2">Actions</th> <!-- Added Actions column for Delete button -->
+                                <th class="border p-2">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($expenses as $expense)
-                                <tr id="expense-{{ $expense->id }}">
-                                    <td class="border p-2">{{ $expense->date }}</td>
-                                    <td class="border p-2">{{ $expense->category }}</td>
-                                    <td class="border p-2">₱{{ number_format($expense->amount, 2) }}</td>
-                                    <td class="border p-2">{{ $expense->quantity }}</td> <!-- Display the quantity -->
-                                    <td class="border p-2">₱{{ number_format($expense->total_amount, 2) }}</td> <!-- Display the total amount -->
-                                    <td class="border p-2">{{ $expense->notes }}</td>
-
-                                    <!-- Delete button -->
-                                    <td class="border p-2">
-                                        <button class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 delete-btn" data-id="{{ $expense->id }}">
+                                <tr id="expense-{{ $expense->id }}" class="text-gray-900 dark:text-gray-100">
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">{{ $expense->date }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">{{ $expense->category }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">₱{{ number_format($expense->amount, 2) }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">{{ $expense->quantity }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">₱{{ number_format($expense->total_amount, 2) }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">{{ $expense->notes }}</td>
+                                    <td class="border p-2 border-gray-300 dark:border-gray-600">
+                                        <button class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 dark:hover:bg-red-400 delete-btn" data-id="{{ $expense->id }}">
                                             Delete
                                         </button>
                                     </td>

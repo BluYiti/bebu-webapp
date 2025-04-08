@@ -14,45 +14,45 @@
             <div class="container mx-auto p-4 mt-8">
                 <h1 class="text-2xl font-bold mb-4 text-black dark:text-white">Budget Overview</h1>
 
-                @if($budgets->isNotEmpty())
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        @foreach($budgets as $budget)
-                            <div class="p-4 rounded-lg border shadow-sm bg-white dark:bg-gray-700">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Category: {{ $budget->category ?? 'Uncategorized' }}</h2>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Created on: {{ $budget->created_at->format('F j, Y') }}</p>
-                                
-                                <div class="mt-4">
-                                    <div class="bg-green-100 p-4 rounded-lg mb-2">
-                                        <h3 class="text-md font-medium">Total Budget</h3>
-                                        <p class="text-2xl font-bold">₱{{ number_format($budget->amount, 2) }}</p>
-                                    </div>
-                                    
-                                    <div class="bg-red-100 p-4 rounded-lg mb-2">
-                                        <h3 class="text-md font-medium">Spent So Far</h3>
-                                        <p class="text-2xl font-bold">₱{{ number_format($budget->spent_amount, 2) }}</p>
-                                    </div>
-                                    
-                                    <div class="bg-blue-100 p-4 rounded-lg mb-4">
-                                        <h3 class="text-md font-medium">Remaining Budget</h3>
-                                        <p class="text-2xl font-bold">₱{{ number_format($budget->total_budget - $budget->spent_amount, 2) }}</p>
-                                    </div>
+                <!-- No Budgets Message (Initially Hidden) -->
+                <div id="noBudgetsMessage" class="bg-yellow-100 p-4 rounded-lg hidden">
+                    <p class="text-lg text-black mb-4">No budgets available yet. Please create a budget.</p>
+                    <a href="{{ route('budget.create') }}" class="text-white bg-green-500 px-4 py-2 rounded-lg hover:bg-green-700">Create Budget</a>
+                </div>
 
-                                    <button type="button" onclick="confirmDelete({{ $budget->id }})" class="text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-700">Delete Budget</button>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @foreach($budgets as $budget)
+                        <div id="budget-card-{{ $budget->id }}" class="p-4 rounded-lg border shadow-sm bg-white dark:bg-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Category: {{ $budget->category ?? 'Uncategorized' }}</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Created on: {{ $budget->created_at->format('F j, Y') }}</p>
+
+                            <div class="mt-4">
+                                <div class="bg-green-100 p-4 rounded-lg mb-2">
+                                    <h3 class="text-md font-medium">Total Budget</h3>
+                                    <p class="text-2xl font-bold">₱{{ number_format($budget->amount, 2) }}</p>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="bg-yellow-100 p-4 rounded-lg">
-                        <p class="text-lg text-black mb-4">No budgets available yet. Please create a budget.</p>
-                        <a href="{{ route('budget.create') }}" class="text-white bg-green-500 px-4 py-2 rounded-lg hover:bg-green-700">Create Budget</a>
-                    </div>
-                @endif
 
+                                <div class="bg-red-100 p-4 rounded-lg mb-2">
+                                    <h3 class="text-md font-medium">Spent So Far</h3>
+                                    <p class="text-2xl font-bold">₱{{ number_format($budget->spent_amount, 2) }}</p>
+                                </div>
+
+                                <div class="bg-blue-100 p-4 rounded-lg mb-4">
+                                    <h3 class="text-md font-medium">Remaining Budget</h3>
+                                    <p class="text-2xl font-bold">₱{{ number_format($budget->total_budget - $budget->spent_amount, 2) }}</p>
+                                </div>
+
+                                <!-- Delete Button -->
+                                <button type="button" onclick="confirmDelete({{ $budget->id }})" class="text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-700">Delete Budget</button>
+                            </div>
+                        </div>
+                    @endforeach                    
+                </div>
+            
                 <div class="mt-8">
                     <a href="{{ route('budget.create') }}" class="text-white bg-green-500 px-4 py-2 rounded-lg hover:bg-green-700">Create New Budget</a>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 
@@ -73,14 +73,58 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const budgets = @json($budgets); // Convert PHP variable to JavaScript array
+
+            // Check if there are no budgets
+            if (budgets.length === 0) {
+                // Show the "No budgets" message
+                document.getElementById('noBudgetsMessage').classList.remove('hidden');
+            } else {
+                // Hide the "No budgets" message
+                document.getElementById('noBudgetsMessage').classList.add('hidden');
+            }
+        });
+
         function confirmDelete(budgetId) {
             const form = document.getElementById('deleteForm');
-            form.action = `/budget/${budgetId}`;
-            document.getElementById('deleteModal').classList.remove('hidden');
+            form.action = `/budget/${budgetId}`;  // Dynamically set the form action URL
+            document.getElementById('deleteModal').classList.remove('hidden'); // Show the modal
         }
 
         function closeModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.add('hidden'); // Hide the modal
         }
+
+        document.getElementById('deleteForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent form from submitting normally
+
+            // Get the form element
+            const form = event.target;
+
+            const budgetId = form.action.split('/').pop();  // Get the budget ID from the URL
+            const budgetCard = document.querySelector(`#budget-card-${budgetId}`);  // Get the budget card to remove
+
+            // Send the DELETE request via AJAX
+            fetch(form.action, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // If successful, remove the budget card from the DOM
+                    budgetCard.remove();
+                    closeModal();  // Close the modal
+                } else {
+                    alert('An error occurred while deleting the budget.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the budget.');
+            });
+        });
     </script>
 </x-app-layout>
